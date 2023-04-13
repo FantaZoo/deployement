@@ -27,5 +27,5 @@ ansible-playbook -b -i inventory.yml ./main.yml
 Once dependencies are installed, you can deploy the app only using a tag:
 
 ```
-ansible-playbook -b -i inventory.yml ./main.yml -t app
+ansible-playbook -b -i inventory.yml ./main.yml -t fantazoo
 ```

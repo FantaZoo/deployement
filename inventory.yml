@@ -5,7 +5,7 @@ all:
     group1:
       hosts:
         # Configured on https://www.duckdns.org
-        ynov-m1b-group1.duckdns.org:
+        fantazoo.duckdns.org:
       vars:
-        domain_name: ynov-m1b-group1.duckdns.org
+        domain_name: fantazoo.duckdns.org
           

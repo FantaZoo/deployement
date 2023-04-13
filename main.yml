@@ -5,14 +5,13 @@
   tags:
     - dependencies
 
-# Optional: configure additional user access - default username is user
-# - hosts: "group1"
-#   vars:
-#     ssh_key_paths:
-#       - files/group1/paul.key.pub
-#       - files/group1/paul.key.pub
-#   roles:
-#     - users
+#Optional: configure additional user access - default username is user
+- hosts: "group1"
+  vars:
+    ssh_key_paths:
+      - files/group1/benoit.key.pub
+  roles:
+    - users
 
 # Install the sample app
 - hosts: all
@@ -49,7 +48,7 @@
               restart: unless-stopped
               environment:
                 NGINX_PROXY_CONTAINER: nginx-reverse-proxy
-                ACME_CA_URI: https://acme-staging-v02.api.letsencrypt.org/directory # comment this out to disable testing server
+                # ACME_CA_URI: https://acme-staging-v02.api.letsencrypt.org/directory # comment this out to disable testing server
               volumes:
                 - certs:/etc/nginx/certs
                 - vhosts:/etc/nginx/vhost.d
@@ -59,9 +58,8 @@
               networks:
                 - internal
 
-            # Web app
-            whoami:
-              image: nginx
+            app:
+              image: docker.io/benoitbelloc/fantazoofront:v2
               restart: unless-stopped
               environment:
                 LETSENCRYPT_RESTART_CONTAINER: "true"
@@ -70,6 +68,31 @@
                 VIRTUAL_PATH: /
               networks:
                 - internal
+                
+            back:
+              image: docker.io/benoitbelloc/fantazooback
+              restart: unless-stopped
+              environment:
+                LETSENCRYPT_RESTART_CONTAINER: "true"
+                LETSENCRYPT_HOST: "{{ domain_name }}"
+                VIRTUAL_HOST: "{{ domain_name }}"
+                VIRTUAL_PATH: /api/
+              ports:
+                - 8000:8000
+              networks:
+                - internal
+
+            # Web app
+            # whoami:
+            #   image: docker.io/benoitbelloc/fantazoo-front
+            #   restart: unless-stopped
+            #   environment:
+            #     LETSENCRYPT_RESTART_CONTAINER: "true"
+            #     LETSENCRYPT_HOST: "{{ domain_name }}"
+            #     VIRTUAL_HOST: "{{ domain_name }}"
+            #     VIRTUAL_PATH: /
+            #   networks:
+            #     - internal
 
           networks:
             external:
